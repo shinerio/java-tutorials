@@ -1,8 +1,9 @@
 # 启动zookeeper
 
 ```shell
+docker network create --subnet=172.11.0.0/16 net_zookeeper
 docker pull zookeeper
-docker run -d -p 12181:2181 --name shinerio-zookeeper zookeeper:latest
+docker run -d --net net_zookeeper --ip 172.11.0.100 -p 2181:2181 --name shinerio-zookeeper zookeeper:latest
 ```
 
 # zkCli

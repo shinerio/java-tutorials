@@ -19,17 +19,19 @@
         <sentinel.zookeeper.verion>1.7.1</sentinel.zookeeper.verion>
         <zookeeper.version>3.7.0</zookeeper.version>
         <curator.version>4.3.0</curator.version>
+        <springfox.version>3.0.0</springfox.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
-        <!-- resole "Cannot resolve configuration property" -->
+
+        <!-- swagger -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>${springfox.version}</version>
         </dependency>
 
         <dependency>
@@ -92,4 +94,17 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>alimaven</id>
+            <name>aliyun maven</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

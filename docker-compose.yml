@@ -1,0 +1,148 @@
+version: "3"
+
+services:
+  # mongo
+  mongo:
+    image: mongo:latest
+    networks:
+      net_mongo:
+        ipv4_address: 172.10.0.100
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  # zookeeper
+  zookeeper:
+    image: zookeeper:latest
+    networks:
+      net_zookeeper:
+        ipv4_address: 172.11.0.100
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - "2181:2181"
+
+  nginx-keepalived-1:
+    depends_on:
+      - app1
+      - app2
+      - app3
+    build:
+      dockerfile: nginx/Dockerfile
+    networks:
+      net_app:
+        ipv4_address: 172.12.0.201
+    ports:
+      - "4999:5000"
+    volumes:
+      - ./nginx/nginx1.conf:/etc/nginx/nginx.conf
+      - ./nginx/keepalived-MASTER.conf:/etc/keepalived/keepalived.conf
+      - ./nginx/keepalived_run.sh:/docker-entrypoint.d/keepalived_run.sh
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    privileged: true
+
+  nginx-keepalived-2:
+    depends_on:
+      - app1
+      - app2
+      - app3
+    build:
+      dockerfile: nginx/Dockerfile
+    networks:
+      net_app:
+        ipv4_address: 172.12.0.202
+    ports:
+      - "4998:5000"
+    volumes:
+      - ./nginx/nginx2.conf:/etc/nginx/nginx.conf
+      - ./nginx/keepalived-BACKUP.conf:/etc/keepalived/keepalived.conf
+      - ./nginx/keepalived_run.sh:/docker-entrypoint.d/keepalived_run.sh
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    privileged: true
+
+  app1:
+    depends_on:
+      - mongo
+      - zookeeper
+    build:
+      dockerfile: app/Dockerfile
+    networks:
+      net_app:
+        ipv4_address: 172.12.0.100
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - "5100:5000"
+
+  app2:
+    depends_on:
+      - mongo
+      - zookeeper
+    build:
+      dockerfile: app/Dockerfile
+    networks:
+      net_app:
+        ipv4_address: 172.12.0.101
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - "5101:5000"
+
+  app3:
+    depends_on:
+      - mongo
+      - zookeeper
+    build:
+      dockerfile: app/Dockerfile
+    networks:
+      net_app:
+        ipv4_address: 172.12.0.102
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - "5102:5000"
+
+  sentinel-dashboad:
+    build:
+      dockerfile: sentinel/Dockerfile
+    networks:
+      net_dashboard:
+        ipv4_address: 172.1.0.2
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    command: java -jar -Dserver.port=80 -Dproject.name=sentinel-dashboard -Dcsp.sentinel.dashboard.server=172.1.0.2:80 /sentinel-dashboard.jar
+
+networks:
+  net_mongo:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.10.0.0/16
+          gateway: 172.10.0.1
+  net_zookeeper:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.11.0.0/16
+          gateway: 172.10.0.1
+  net_app:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.12.0.0/16
+          gateway: 172.12.0.1
+  net_dashboard:
+    ipam:
+      config:
+        - subnet: 172.1.0.0/24
+          gateway: 172.1.0.1

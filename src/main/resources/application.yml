@@ -1,7 +1,5 @@
 server:
-  port: 80
-
-middleware-address: localhost
+  port: 5000
 
 # mongo
 spring:
@@ -9,7 +7,7 @@ spring:
     name: java-tutorial
   data:
     mongodb:
-      host: ${middleware-address}
+      host: 172.10.0.100
       port: 27017
       database: mongo_demo
       authentication-database: admin
@@ -21,18 +19,18 @@ spring:
       log:
         dir: /var/log/sentinel
       transport:
-        dashboard: ${middleware-address}:8081  # sentinel控制台地址
-        port: 8720 # 这里的端口配置会在应用对应的机器上启动一个Http Server，该Server会与Sentinel控制台做交互。比如Sentinel控制台添加了一个限流规则，会把规则数据push给这个Http Server接收，Http Server再将规则注册到Sentinel中
+        dashboard: 172.1.0.2:80  # sentinel控制台地址
+        port: 8719 # 这里的端口配置会在应用对应的机器上启动一个Http Server，该Server会与Sentinel控制台做交互。比如Sentinel控制台添加了一个限流规则，会把规则数据push给这个Http Server接收，Http Server再将规则注册到Sentinel中
       datasource:
-        ds.zookeeper.server-addr: ${middleware-address}:12181
+        ds.zookeeper.server-addr: 172.11.0.100:2181
 
 zookeeper:
   retry-count: 5
   elapsed-time: 3000
   session-timeout: 30000
   connection-timeout: 3000
-  address: ${middleware-address}:12181
+  address: 172.11.0.100:2181
 
 # logback
 logging:
-  config: classpath:log/logback-console.xml
+  config: classpath:log/logback.xml

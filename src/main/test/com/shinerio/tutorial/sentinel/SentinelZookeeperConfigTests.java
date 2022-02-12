@@ -28,17 +28,31 @@ public class SentinelZookeeperConfigTests extends JavaTutorialTests {
         List<FlowRule> rules = new ArrayList<>();
         FlowRule accountFindAllRule = new FlowRule("account_find_all");
         // set limit qps to 2
-        accountFindAllRule.setCount(1);
+        accountFindAllRule.setCount(2);
         accountFindAllRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
         accountFindAllRule.setLimitApp("default");
         rules.add(accountFindAllRule);
 
         FlowRule accountFindByIdRule = new FlowRule("account_find_by_id");
-        // set limit qps to 1
+        // set limit qps to 2
         accountFindByIdRule.setCount(2);
         accountFindByIdRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
         accountFindByIdRule.setLimitApp("default");
         rules.add(accountFindByIdRule);
+
+        FlowRule accountDelete = new FlowRule("account_delete");
+        // set limit qps to 1
+        accountDelete.setCount(1);
+        accountDelete.setGrade(RuleConstant.FLOW_GRADE_QPS);
+        accountDelete.setLimitApp("default");
+        rules.add(accountDelete);
+
+        FlowRule accountInsert = new FlowRule("account_insert");
+        // set limit qps to 1
+        accountInsert.setCount(1);
+        accountInsert.setGrade(RuleConstant.FLOW_GRADE_QPS);
+        accountInsert.setLimitApp("default");
+        rules.add(accountInsert);
 
         CuratorFramework zkClient = CuratorFrameworkFactory.newClient(zookeeperAddress, new ExponentialBackoffRetry
                 (10, 3));
