@@ -295,6 +295,60 @@ Chain DOCKER-ISOLATION-STAGE-2 (2 references)
 14060  819K RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0  
 ```
 
+## docker在宿主机中使用的四条链
+
+```shell
+Chain INPUT (policy ACCEPT 1252M packets, 1407G bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain FORWARD (policy DROP 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    6   542 DOCKER-USER  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+    6   542 DOCKER-ISOLATION-STAGE-1  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+    3   357 ACCEPT     all  --  *      docker0  0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+    0     0 DOCKER     all  --  *      docker0  0.0.0.0/0            0.0.0.0/0           
+    3   185 ACCEPT     all  --  docker0 !docker0  0.0.0.0/0            0.0.0.0/0           
+    0     0 ACCEPT     all  --  docker0 docker0  0.0.0.0/0            0.0.0.0/0           
+
+Chain OUTPUT (policy ACCEPT 699M packets, 339G bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain DOCKER (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain DOCKER-ISOLATION-STAGE-1 (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    3   185 DOCKER-ISOLATION-STAGE-2  all  --  docker0 !docker0  0.0.0.0/0            0.0.0.0/0           
+    6   542 RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain DOCKER-ISOLATION-STAGE-2 (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 DROP       all  --  *      docker0  0.0.0.0/0            0.0.0.0/0           
+    3   185 RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain DOCKER-USER (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    6   542 RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0  
+```
+
+- DOCKER
+- DOCKER-ISOLATION
+- DOCKER-USER
+
+> 优先级`DOCKER-USER` > `DOCKER-ISOLATION` > `DOCKER`
+
+### DOCKER-USER
+
+`Docker`启动时，会加载`DOCKER`链和`DOCKER-ISOLATION`链中的过滤规则，用户不应该修改这两条链中的内容。如果用户需要添加自定义的过滤规则，建议追加到`DOCKER-USER`链。`DOCKER-USER`链中的过滤规则，将先于`Docker`默认创建的规则被加载，从而能够覆盖`Docker`在`DOCKER`链和`DOCKER-ISOLATION`链中的默认过滤规则。
+
+### DOCKER
+
+forwarder链匹配任意入接口，出接口到docker0的数据，流量交由docker链处理，因此该链只处理从宿主机到docker0的数据包
+
+## DOCKER-ISOLATION
+
+`DOCKER-ISOLATION`分为`DOCKER-ISOLATION-STAGE-1`和`DOCKER-ISOLATION-STAGE-2`两条链。`DOCKER-ISOLATION-STAGE-1`链过滤从`docker0`网桥访问非`docker0`网桥的流量，交由`DOCKER-ISOLATION-STAGE-2`链处理，不匹配就返回到父链FORWARD。在`DOCKER-ISOLATION-STAGE-2`链中，进一步处理目的地址是`docker0`网络的数据包，否则数据包来自其他bridge网络，将被直接DROP；不匹配的数据包就返回到父链FORWARD继续进行后续处理。
+
 # 存储
 
 docker容器启动的时候可以通过指定-v参数将宿主机目录挂载到容器上，参数由（:）分隔的三个字段组成，<卷名>:<容器路径>:<选项列表>。选项列表，如：ro（只读），consistent，delegated，cached，z 和 Z
