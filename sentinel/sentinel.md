@@ -20,7 +20,7 @@ Sentinel控制台提供一个轻量级的控制台，它提供机器发现、单
 java -Dserver.port=8081 -Dcsp.sentinel.dashboard.server=localhost:8081 -Dproject.name=sentinel-dashboard -jar sentinel-dashboard*.jar
 ```
 
-即可访问```http://localhost:8081/#/dashboard/flow/sentinel-dashboard```，默认用户名和密码均为sentinel
+即可访问`http://localhost:8081/#/dashboard/flow/sentinel-dashboard`，默认用户名和密码均为sentinel
 
 > Sentinel 会在客户端首次调用时候进行初始化，开始向控制台发送心跳包。因此需要确保客户端有访问量，才能在控制台上看到监控数据。
 

@@ -9,7 +9,7 @@ iptables -A DOCKER-USER -j RETURN
 
 docker compose up &
 
-while [[ ]]; do
+while [[ x"$(docker network ls|grep -E "net_app|net_dashboard|net_mongo|net_zookeeper"|wc -l)" != x"4" ]]; do
     echo "wait for docker start..."
     sleep 3
 done
