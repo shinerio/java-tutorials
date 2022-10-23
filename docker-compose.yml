@@ -134,7 +134,7 @@ networks:
     ipam:
       config:
         - subnet: 172.11.0.0/16
-          gateway: 172.10.0.1
+          gateway: 172.11.0.1
   net_app:
     driver: bridge
     ipam:
