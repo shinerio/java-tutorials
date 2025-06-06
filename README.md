@@ -2,7 +2,7 @@
 
 - docker
 - docker compose
-- jdk 17
+- jdk 11
 
 # startup
 

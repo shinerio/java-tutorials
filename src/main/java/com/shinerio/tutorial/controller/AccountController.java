@@ -28,7 +28,9 @@ public class AccountController {
         this.lockManager = lockManager;
     }
 
-    //curl -X GET localhost:5000/account -k
+    /**
+     * curl -X GET localhost:5000/account -k
+     */
     @ApiOperation("用户列表")
     @GetMapping
     public Flux<Account> findAll() {
