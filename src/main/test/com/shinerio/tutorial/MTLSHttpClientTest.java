@@ -50,7 +50,7 @@ public class MTLSHttpClientTest {
         // 创建SSLContext
         SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(
-                null,//kmf.getKeyManagers(),
+                kmf.getKeyManagers(),
                 tmf.getTrustManagers(),
                 new SecureRandom()
         );

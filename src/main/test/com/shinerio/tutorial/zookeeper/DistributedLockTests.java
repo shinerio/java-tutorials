@@ -2,11 +2,11 @@ package com.shinerio.tutorial.zookeeper;
 
 import com.shinerio.tutorial.JavaTutorialTests;
 import com.shinerio.tutorial.util.LockManager;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Resource;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
