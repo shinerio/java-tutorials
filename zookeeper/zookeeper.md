@@ -1,3 +1,22 @@
+# 本地安装zookeeper
+
+访问[release](https://zookeeper.apache.org/releases.html)下载最新安装包
+```shell
+tar -zxvf apache-zookeeper-*
+cd apache-zookeeper-3.9.3-bin/conf/
+cp zoo_sample.cfg zoo.cfg
+bash ../bin/zkServer.sh start
+```
+
+```shell
+# vim zoo.cfg
+# the port at which the clients will connect
+clientPort=2181
+# serverPort默认端口8080，修改端口为2182
+admin.serverPort=2182
+```
+
+
 # 启动zookeeper
 
 ```shell
@@ -51,8 +70,3 @@ docker run -d --net net_zookeeper --ip 172.11.0.100 -p 2181:2181 --name shinerio
 （1）基于ZooKeeper的分布式锁，适用于高可靠（高可用）而并发量不是太大的场景；
 
 （2）基于Redis的分布式锁，适用于并发量很大、性能要求很高的、而可靠性问题可以通过其他方案去弥补的场景，比如通过数据库乐观锁进行兜底。
-
-# 参考链接
-
-1. http://www.mydlq.club/article/67/
-2. https://www.cnblogs.com/crazymakercircle/p/14504520.html

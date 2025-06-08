@@ -1,37 +1,44 @@
 package com.shinerio.tutorial.config;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.oas.annotations.EnableOpenApi;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
+
+import java.util.List;
 
 @Configuration
-@EnableOpenApi
 public class SwaggerConfig {
     @Bean
-    public Docket docket(){
-        return new Docket(DocumentationType.OAS_30)
-                .apiInfo(apiInfo()).enable(true)
-                .select()
-                //apis： 添加swagger接口提取范围
-                .apis(RequestHandlerSelectors.basePackage("com.shinerio.tutorial.controller"))
-                //.apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
-                .paths(PathSelectors.any())
-                .build();
-    }
+    public OpenAPI myOpenAPI() {
 
-    private ApiInfo apiInfo(){
-        return new ApiInfoBuilder()
-                .title("Java-tutorial项目接口文档")
-                .description("High available, High concurrency")
-                .contact(new Contact("shinerio", "shinerio.cc", "jstxzhangrui@163.com"))
+        // 定义测试环境服务器URL
+        String devUrl = "http://localhost:5000";
+        Server devServer = new Server();
+        devServer.setUrl(devUrl);
+        devServer.setDescription("本地服务器URL");
+
+        // 定义生产环境服务器URL
+        String prodUrl = "http://web.shinerio.site";
+        Server prodServer = new Server();
+        prodServer.setUrl(prodUrl);
+        prodServer.setDescription("正式环境的服务器URL");
+
+        Contact contact = new Contact();
+        contact.setEmail("jstxzhangrui@163.com");
+        contact.setName("Rui Zhang");
+        contact.setUrl("http://web.shinerio.site");
+
+        Info info = new Info()
+                .title("Java tutorial 演示 API")
                 .version("1.0")
-                .build();
+                .contact(contact)
+                .description("对外API接口说明.");
+
+        return new OpenAPI().info(info)
+                .servers(List.of(devServer, prodServer));
     }
 }

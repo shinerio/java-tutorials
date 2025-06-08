@@ -1,8 +1,12 @@
-# dependency
+# install dependencies
 
-- docker
-- docker compose
-- jdk 11
+## docker
+
+```shell
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sed -i 's+https://download.docker.com+https://mirrors.tuna.tsinghua.edu.cn/docker-ce+' /etc/yum.repos.d/docker-ce.repo
+yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
 
 # startup
 
@@ -21,22 +25,22 @@ sbin/shutdown.sh
 for real app access:
 
 ```shell
-http://172.12.0.100:5000/swagger-ui/index.html
-http://172.12.0.101:5000/swagger-ui/index.html
-http://172.12.0.102:5000/swagger-ui/index.html
+http://172.12.0.100:5000/swagger-ui.html
+http://172.12.0.101:5000/swagger-ui.html
+http://172.12.0.102:5000/swagger-ui.html
 ```
 
 for nginx access:
 
 ```shell
-http://172.12.0.201:5000/swagger-ui/index.html
-http://172.12.0.202:5000/swagger-ui/index.html
+http://172.12.0.201:5000/swagger-ui.html
+http://172.12.0.202:5000/swagger-ui.html
 ```
 
 for vip access:
 
 ```shell
-http://172.12.0.200:5000/swagger-ui/index.html
+http://172.12.0.200:5000/swagger-ui.html
 ```
 
 # possible problems

@@ -9,6 +9,7 @@ import com.alibaba.fastjson.TypeReference;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+
 import java.util.List;
 
 @Configuration
@@ -21,11 +22,13 @@ public class SentinelZookeeperConfig {
 
     @PostConstruct
     public void loadRules() {
+        loadFromZookeeper();
+    }
+
+    private void loadFromZookeeper() {
         String path = "/sentinel_rule_config/" + appName;
         ReadableDataSource<String, List<FlowRule>> flowRuleDataSource =
-                new ZookeeperDataSource<>(zookeeperAddress, path,
-                        source -> JSON.parseObject(source, new TypeReference<>() {
-                }));
+                new ZookeeperDataSource<>(zookeeperAddress, path, source -> JSON.parseObject(source, new TypeReference<>() {}));
         FlowRuleManager.register2Property(flowRuleDataSource.getProperty());
     }
 }

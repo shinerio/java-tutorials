@@ -1,0 +1,27 @@
+spring:
+  data:
+    # mongo
+    mongodb:
+      host: 192.168.85.2
+      port: 27017
+      database: mongo_demo
+      authentication-database: admin
+      username: shinerio
+      password: shinerio
+  cloud:
+    # sentinel
+    sentinel:
+      log:
+        dir: /var/log/sentinel
+      transport:
+        dashboard: localhost:5001  # sentinel控制台地址
+        port: 8719 # 这里的端口配置会在应用对应的机器上启动一个Http Server，该Server会与Sentinel控制台做交互。比如Sentinel控制台添加了一个限流规则，会把规则数据push给这个Http Server接收，Http Server再将规则注册到Sentinel中
+      datasource:
+        ds.zookeeper.server-addr: 192.168.85.2:2181
+
+zookeeper:
+  retry-count: 5
+  elapsed-time: 3000
+  session-timeout: 30000
+  connection-timeout: 3000
+  address: 192.168.85.2:2181
