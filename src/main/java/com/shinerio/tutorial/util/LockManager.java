@@ -22,31 +22,31 @@ public class LockManager {
     }
 
     /**
-     * 尝试获取分布式排他锁
+     * 尝试获取分布式排他锁，仅能用于同步方法，加解锁需要同一个线程
      *
      * @param key        分布式锁 key
-     * @param expireTime 超时时间
+     * @param waitTime 超时时间
      * @param timeUnit   时间单位
      * @return 超时时间单位
      */
-    public boolean tryLock(String key, int expireTime, TimeUnit timeUnit) {
+    public boolean tryLock(String key, int waitTime, TimeUnit timeUnit) {
         try {
             InterProcessMutex mutex = new InterProcessMutex(curatorFramework, String.format(LOCK_PATH, key));
-            boolean locked = mutex.acquire(expireTime, timeUnit);
+            boolean locked = mutex.acquire(waitTime, timeUnit);
             if (locked) {
-                log.info("申请锁(" + key + ")成功");
+                log.info("申请锁({})成功", key);
                 LOCK_MAP.put(key, mutex);
                 return true;
             }
         } catch (Exception e) {
-            log.error("申请锁(" + key + ")失败,错误：{}", e);
+            log.error("申请锁({})失败", key, e);
         }
-        log.warn("申请锁(" + key + ")失败");
+        log.info("申请锁({})失败", key);
         return false;
     }
 
     /**
-     * 释放锁
+     * 释放锁，仅能用于同步方法，加解锁需要同一个线程
      *
      * @param key 分布式锁 key
      */
@@ -55,10 +55,11 @@ public class LockManager {
             InterProcessMutex mutex = LOCK_MAP.get(key);
             if (mutex != null) {
                 mutex.release();
+                LOCK_MAP.remove(key);
             }
-            log.info("解锁(" + key + ")成功");
+            log.info("解锁({})成功", key);
         } catch (Exception e) {
-            log.error("解锁(" + key + ")失败！");
+            log.error("解锁({})失败！", key);
         }
     }
 }

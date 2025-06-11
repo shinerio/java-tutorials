@@ -73,6 +73,14 @@ FlowRuleManager.register2Property(flowRuleDataSource.getProperty());
 
 也可以通过运行`SentinelZookeeperConfigTests`来推送规则配置到zookeeper中。
 
+运行后可以通过zk客户端工具查看
+```shell
+[zk: localhost:2181(CONNECTED) 9] ls /sentinel_rule_config
+[java-tutorial]
+[zk: localhost:2181(CONNECTED) 10] get /sentinel_rule_config/java-tutorial 
+[{"clusterMode":false,"controlBehavior":0,"count":2.0,"grade":1,"limitApp":"default","maxQueueingTimeMs":500,"regex":false,"resource":"account_find_all","strategy":0,"warmUpPeriodSec":10},{"clusterMode":false,"controlBehavior":0,"count":2.0,"grade":1,"limitApp":"default","maxQueueingTimeMs":500,"regex":false,"resource":"account_find_by_id","strategy":0,"warmUpPeriodSec":10},{"clusterMode":false,"controlBehavior":0,"count":1.0,"grade":1,"limitApp":"default","maxQueueingTimeMs":500,"regex":false,"resource":"account_delete","strategy":0,"warmUpPeriodSec":10},{"clusterMode":false,"controlBehavior":0,"count":1.0,"grade":1,"limitApp":"default","maxQueueingTimeMs":500,"regex":false,"resource":"account_insert","strategy":0,"warmUpPeriodSec":10}]
+```
+
 ## 容器化部署
 
 ```shell

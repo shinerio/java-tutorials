@@ -1,0 +1,21 @@
+server:
+  port: 5000
+  ssl:
+    key-store: classpath:certificate/server.jks
+    key-store-password: changeit
+    key-alias: server
+    trust-store: classpath:certificate/server_truststore.jks
+    trust-store-password: changeit
+    client-auth: need
+    enabled: true
+
+# mongo
+spring:
+  profiles:
+    active: local
+  application:
+    name: java-tutorial
+
+# logback
+logging:
+  config: classpath:log/log4j2.xml

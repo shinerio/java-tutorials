@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="60">
+    <!-- 定义变量 -->
+    <Properties>
+        <Property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%t] %-40.40c{1.} : %m%n"/>
+    </Properties>
+
+    <!-- 输出到控制台 -->
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}">
+                <charset>UTF-8</charset>
+            </PatternLayout>
+        </Console>
+
+        <!-- 文件输出 - 基于时间滚动 -->
+        <RollingFile name="FILE" fileName="/var/log/app/app.log" filePattern="/var/log/app/app.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}">
+                <charset>UTF-8</charset>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="1"/>
+        </RollingFile>
+
+        <!-- 异步文件输出 -->
+        <Async name="ASYNC_FILE" bufferSize="256" blocking="false" immediateFlush="false">
+            <AppenderRef ref="FILE"/>
+        </Async>
+    </Appenders>
+
+    <!-- 日志配置 -->
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="ASYNC_FILE"/>
+        </Root>
+    </Loggers>
+</Configuration>

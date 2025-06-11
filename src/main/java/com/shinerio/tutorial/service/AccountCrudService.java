@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Service
 public class AccountCrudService {
 
@@ -29,6 +31,11 @@ public class AccountCrudService {
 
     @SentinelResource(value = "account_insert", blockHandlerClass = SentinelBlockHandler.class, blockHandler = "insertBlockHandler")
     public Mono<Account> insert(Account account) {
+        return accountCrudRepository.insert(account);
+    }
+
+    @SentinelResource(value = "account_batch_insert", blockHandlerClass = SentinelBlockHandler.class, blockHandler = "insertBlockHandler")
+    public Flux<Account> insertList(List<Account> account) {
         return accountCrudRepository.insert(account);
     }
 

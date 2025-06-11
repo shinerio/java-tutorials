@@ -50,6 +50,17 @@ docker run -d --net net_zookeeper --ip 172.11.0.100 -p 2181:2181 --name shinerio
 </dependency>
 ```
 
+## zookeeper分布式锁存储
+
+```shell
+[zk: localhost:2181(CONNECTED) 18] ls /java-tutorial/lock-space/account_1 
+[_c_b002a80b-f82e-46aa-8762-a7c7bd23737f-lock-0000000000]
+[zk: localhost:2181(CONNECTED) 19] ls /java-tutorial/lock-space/account_1/_c_b002a80b-f82e-46aa-8762-a7c7bd23737f-lock-0000000000 
+[]
+[zk: localhost:2181(CONNECTED) 20] get /java-tutorial/lock-space/account_1/_c_b002a80b-f82e-46aa-8762-a7c7bd23737f-lock-0000000000 
+198.18.0.1
+```
+
 ## 分布式锁的选择，redis or zookeeper
 
 （1）优点：ZooKeeper分布式锁（如InterProcessMutex），能有效的解决分布式问题，不可重入问题，使用起来也较为简单。

@@ -36,8 +36,8 @@ public class MTLSHttpClientTest {
     @Test
     public void testMTLS() throws Exception {
         // 加载客户端证书、私钥
-        KeyStore keyStore = loadKeyStore("client.jks", "changeit");
-        KeyStore trustStore = loadKeyStore("client_truststore.jks", "changeit");
+        KeyStore keyStore = loadKeyStore("certificate/client.jks", "changeit");
+        KeyStore trustStore = loadKeyStore("certificate/client_truststore.jks", "changeit");
 
         // 创建KeyManagerFactory
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());

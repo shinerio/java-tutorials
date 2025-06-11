@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -49,6 +50,12 @@ public class AccountController {
     @PostMapping
     public Mono<Account> insert(@RequestBody Account account) {
         return accountCrudService.insert(account);
+    }
+
+    @Operation(summary = "批量创建用户")
+    @PostMapping("/batch")
+    public Flux<Account> batchInsert(@RequestBody List<Account> account) {
+        return accountCrudService.insertList(account);
     }
 
     //curl -X DELETE localhost:5000/account/61ed1fbca3bf06111b383ee8 -k

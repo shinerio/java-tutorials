@@ -23,23 +23,27 @@ public class DistributedLockTests extends JavaTutorialTests {
     @Test
     public void lockTest() throws InterruptedException {
         Counter counter = new Counter();
-        for (int i = 0; i < 100; i++) {
-            ForkJoinPool.commonPool().submit(() -> {
-                try {
-                    String key = "test";
-                    // 获取锁
-                    if (lockManager.tryLock(key, 10, TimeUnit.SECONDS)) {
-                        for (int j = 0; j < 1000; j++) {
-                            counter.count++;
+        try (ForkJoinPool forkJoinPool = new ForkJoinPool()) {
+            for (int i = 0; i < 100; i++) {
+                forkJoinPool.submit(() -> {
+                    try {
+                        String key = "test";
+                        // 获取锁
+                        if (lockManager.tryLock(key, 10, TimeUnit.SECONDS)) {
+                            for (int j = 0; j < 1000; j++) {
+                                counter.count++;
+                            }
+                            lockManager.unLock(key);
                         }
-                        lockManager.unLock(key);
+                    } catch (Exception e) {
+                        log.error("", e);
                     }
-                } catch (Exception e) {
-                    log.error("", e);
-                }
-            });
+                });
+            }
+            forkJoinPool.shutdown();
+            Assertions.assertTrue(forkJoinPool.awaitTermination(30, TimeUnit.SECONDS));
         }
-        ForkJoinPool.commonPool().awaitTermination(30, TimeUnit.SECONDS);
-        Assertions.assertEquals(counter.count, 100 * 1000);
+
+        Assertions.assertEquals(100 * 1000, counter.count);
     }
 }
