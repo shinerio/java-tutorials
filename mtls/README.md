@@ -3,43 +3,40 @@
 ```shell
 # 生成CA密钥和证书
 openssl genrsa -out ca.key 2048
-openssl req -new -x509 -days 365 -key ca.key -out ca.crt -subj "/CN=shinerio-CA"
+openssl req -new -x509 -days 3650 -key ca.key -out ca.crt -subj "/CN=shinerio-CA"
 
-# 生成服务器密钥和证书签名请求，-subj需要和服务端域名一致，否则会导致浏览器提示证书不受信任
+# 生成服务器密钥和证书签名请求，指定server.conf文件，通过san指定了服务域名，否则浏览器会不信任域名。
 openssl genrsa -out server.key 2048
-openssl req -new -key server.key -out server.csr -subj "/CN=localhost" -reqexts SAN -config server.conf
-
+openssl req -new -key server.key -out server.csr -config server.conf
 # 使用CA签署服务器证书
-openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365
+openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 3650 -extensions v3_req -extfile server.conf
+# 创建服务器密钥库
+openssl pkcs12 -export -in server.crt -inkey server.key -out server.p12 -name server -CAfile ca.crt -caname root -passout pass:changeit
+keytool -importkeystore -srckeystore server.p12 -srcstoretype PKCS12 -destkeystore server.jks -deststoretype JKS -srcstorepass changeit -deststorepass changeit
+# 创建服务器信任库,包含ca证书
+keytool -import -alias ca -file ca.crt -keystore server_truststore.jks -storepass changeit
 
 # 生成客户端密钥和证书签名请求
 openssl genrsa -out client.key 2048
 openssl req -new -key client.key -out client.csr -subj "/CN=Shinerio-Client"
-
 # 使用CA签署客户端证书
-openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365
-
-# 创建服务器密钥库
-openssl pkcs12 -export -in server.crt -inkey server.key -out server.p12 -name server -CAfile ca.crt -caname root
-keytool -importkeystore -srckeystore server.p12 -srcstoretype PKCS12 -destkeystore server.jks -deststoretype JKS
-
+openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 3650
 # 创建客户端密钥库，用于本地导入，实现客户端认证
-openssl pkcs12 -export -in client.crt -inkey client.key -out client.p12 -name client -CAfile ca.crt -caname root
-keytool -importkeystore -srckeystore client.p12 -srcstoretype PKCS12 -destkeystore client.jks -deststoretype JKS
-
-# 创建服务器信任库,包含ca证书
-keytool -import -alias ca -file ca.crt -keystore server_truststore.jks
-
+openssl pkcs12 -export -in client.crt -inkey client.key -out client.p12 -name client -CAfile ca.crt -caname root -passout pass:changeit
+keytool -importkeystore -srckeystore client.p12 -srcstoretype PKCS12 -destkeystore client.jks -deststoretype JKS -srcstorepass changeit -deststorepass changeit
 # 创建客户端信任库，包含ca证书
-keytool -import -alias ca -file ca.crt -keystore client_truststore.jks
+keytool -import -alias ca -file ca.crt -keystore client_truststore.jks -storepass changeit
 ```
 
-# 2. chrome
+# 2. 本地安装ca证书和客户端证书
 windows可以直接双击client.p12文件，导入到windows证书库中，浏览器访问指定网页时会弹框要求选择证书。
 
 注： 在windows运行，建议使用git提供的`/c/Program\ Files/Git/usr/bin/openssl.exe`工具生成p12证书。 linux服务器下生成的p12文件可能无法被windows导入。
 
 ![img.png](img.png)
+
+为了浏览器访问的时候，不提示风险，我们需要把我们生成CA证书导入到系统受信任根证书颁发机构中。
+![img_1.png](img_1.png)
 
 # 3. 客户端
 ```java
