@@ -1,4 +1,4 @@
-package com.shinerio.tutorial;
+package com.shinerio.tutorial.other;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,7 @@ import java.security.SecureRandom;
 
 public class MTLSHttpClientTest {
 
-    private KeyStore loadKeyStore(String filePath, String password) throws Exception {
+    public static KeyStore loadKeyStore(String filePath, String password) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         try (var fis = Path.of(filePath).toFile().exists()
                 ? Path.of(filePath).toFile().toURI().toURL().openStream()
@@ -27,7 +27,7 @@ public class MTLSHttpClientTest {
         return keyStore;
     }
 
-    private SSLParameters createSSLParameters() {
+    public static SSLParameters createSSLParameters() {
         SSLParameters params = new SSLParameters();
         params.setEndpointIdentificationAlgorithm("HTTPS"); // 验证服务器域名
         return params;
@@ -35,6 +35,22 @@ public class MTLSHttpClientTest {
 
     @Test
     public void testMTLS() throws Exception {
+        HttpClient client = getHttpClient();
+
+        // 发送HTTP请求
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://localhost:5000/hello"))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // 打印响应
+        System.out.println("Status code: " + response.statusCode());
+        System.out.println("Response body: " + response.body());
+    }
+
+    public static HttpClient getHttpClient() throws Exception {
         // 加载客户端证书、私钥
         KeyStore keyStore = loadKeyStore("certificate/client.jks", "changeit");
         KeyStore trustStore = loadKeyStore("certificate/client_truststore.jks", "changeit");
@@ -56,21 +72,9 @@ public class MTLSHttpClientTest {
         );
 
         // 创建带有mTLS配置的HttpClient
-        HttpClient client = HttpClient.newBuilder()
+        return HttpClient.newBuilder()
                 .sslContext(sslContext)
                 .sslParameters(createSSLParameters())
                 .build();
-
-        // 发送HTTP请求
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://localhost:5000/hello"))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        // 打印响应
-        System.out.println("Status code: " + response.statusCode());
-        System.out.println("Response body: " + response.body());
     }
 }

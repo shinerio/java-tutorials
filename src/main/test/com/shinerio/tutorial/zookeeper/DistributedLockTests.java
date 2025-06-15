@@ -29,10 +29,11 @@ public class DistributedLockTests extends JavaTutorialTests {
                     try {
                         String key = "test";
                         // 获取锁
-                        if (lockManager.tryLock(key, 10, TimeUnit.SECONDS)) {
+                        if (lockManager.tryLock(key, 10000, TimeUnit.SECONDS)) {
                             for (int j = 0; j < 1000; j++) {
                                 counter.count++;
                             }
+                            TimeUnit.SECONDS.sleep(10);
                             lockManager.unLock(key);
                         }
                     } catch (Exception e) {

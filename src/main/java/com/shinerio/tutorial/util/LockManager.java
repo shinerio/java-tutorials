@@ -13,7 +13,7 @@ public class LockManager {
 
     private static final ConcurrentHashMap<String, InterProcessMutex> LOCK_MAP = new ConcurrentHashMap<>();
 
-    private final String LOCK_PATH = "/java-tutorial/lock-space/%s";
+    private static final String LOCK_PATH = "/java-tutorial/lock-space/%s";
 
     private final CuratorFramework curatorFramework;
 
