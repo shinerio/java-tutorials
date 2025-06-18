@@ -2,7 +2,10 @@ package com.shinerio.tutorial.other;
 
 import org.junit.jupiter.api.Test;
 
-import javax.net.ssl.*;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;

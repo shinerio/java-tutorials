@@ -20,6 +20,7 @@
         <zookeeper.version>3.9.3</zookeeper.version>
         <curator.version>5.8.0</curator.version>
         <webflux-ui.version>2.6.0</webflux-ui.version>
+        <jetcd.version>0.8.5</jetcd.version>
     </properties>
     <dependencies>
         <dependency>
@@ -88,10 +89,27 @@
             <version>${curator.version}</version>
         </dependency>
 
+        <!--etcd-->
+        <dependency>
+            <groupId>io.etcd</groupId>
+            <artifactId>jetcd-core</artifactId>
+            <version>${jetcd.version}</version>
+        </dependency>
+
         <!-- test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -25,3 +25,8 @@ zookeeper:
   session-timeout: 30000
   connection-timeout: 3000
   address: 192.168.85.2:2181
+
+etcd:
+  endpoints: http://huoshan.shinerio.site:2379
+  username: root
+  password: changeit
